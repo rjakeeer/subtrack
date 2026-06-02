@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить подписку</title>
+</head>
+<body>
+    <h2>Добавление новой подписки</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить подписку</button>
+    </form>
+    <p><a href="{% url 'dashboard' %}">Назад на дашборд</a></p>
+</body>
+</html>

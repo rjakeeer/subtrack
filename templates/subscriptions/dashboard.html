@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет - Мои подписки</title>
+</head>
+<body>
+    <h2>Добро пожаловать, {{ request.user.username }}!</h2>
+    <p><a href="{% url 'add_subscription' %}">+ Добавить новую подписку</a> | <a href="/auth/logout/">Выйти</a></p>
+
+    <h3>Ваши активные подписки:</h3>
+    {% if subscriptions %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Стоимость</th>
+                    <th>Период</th>
+                    <th>Дата списания</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in subscriptions %}
+                <tr>
+                    <td>{{ sub }}</td>
+                    <td>{{ sub.price }}</td>
+                    <td>{{ sub.get_billing_period_display }}</td>
+                    <td>{{ sub.next_billing_date }}</td>
+                    <td>{% if sub.is_active %}Активна{% else %}На паузе{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>У вас пока нет добавленных подписок.</p>
+    {% endif %}
+</body>
+</html>
