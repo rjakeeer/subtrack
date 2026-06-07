@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение удаления — SubTrack{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-body p-4 text-center">
+                <h3 class="text-danger mb-3">⚠️ Удаление подписки</h3>
+                <p class="fs-5 text-muted">Вы уверены, что хотите удалить подписку <strong>{{ subscription }}</strong> на сумму {{ subscription.price }} ₽?</p>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-lg me-2 px-4 fw-bold">Да, удалить</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg px-4">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
