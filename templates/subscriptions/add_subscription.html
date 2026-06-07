@@ -1,16 +1,29 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Добавить подписку</title>
-</head>
-<body>
-    <h2>Добавление новой подписки</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Сохранить подписку</button>
-    </form>
-    <p><a href="{% url 'dashboard' %}">Назад на дашборд</a></p>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Добавить подписку — SubTrack{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                ➕ Добавление новой подписки
+            </div>
+            <div class="card-body p-4">
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    
+                    <!-- Автоматическая магия Bootstrap для всех полей формы -->
+                    {% bootstrap_form form %}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">Сохранить подписку</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Назад на дашборд</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
