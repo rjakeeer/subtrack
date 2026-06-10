@@ -5,7 +5,6 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3">📊 Мой Дашборд</h1>
-    <a href="{% url 'add_subscription' %}" class="btn btn-primary">+ Добавить подписку</a>
 </div>
 
 <div class="row">
@@ -21,10 +20,15 @@
             </div>
         </div>
         
+        <!-- Вывод предупреждений об оптимизации с кнопкой скрытия -->
         {% if optimization_alerts %}
             {% for alert in optimization_alerts %}
-                <div class="alert alert-warning shadow-sm mb-4" role="alert">
-                    ⚠️ {{ alert }}
+                <div class="alert alert-warning shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert">
+                    <div>
+                        ⚠️ {{ alert.text }}
+                    </div>
+                    <!-- Кнопка скрытия отправляет запрос на бэкенд-сессию -->
+                    <a href="{% url 'dismiss_alert' alert.id %}" class="btn btn-outline-dark btn-sm fw-bold ms-3" style="font-size: 0.8rem; white-space: nowrap;">Всё в порядке</a>
                 </div>
             {% endfor %}
         {% endif %}
@@ -32,6 +36,7 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white font-weight-bold border-0 py-3">
                 📋 Мои подписки
+                <a href="{% url 'add_subscription' %}" class="btn btn-primary btn-sm fw-bold">+ Добавить</a>
             </div>
             <div class="table-responsive">
                 {% if subscriptions %}
@@ -71,8 +76,10 @@
         </div>
     </div>
     
-    <!-- ПРАВАЯ КОЛОНКА (ГРАФИК + МИКРО-РАСЧЕТ) -->
+        <!-- ПРАВАЯ КОЛОНКА (ГРАФИК + ДВА НЕЗАВИСИМЫХ БЛОКА РАСЧЕТА) -->
     <div class="col-lg-5 mb-4">
+        
+        <!-- График Matplotlib -->
         <div class="card shadow-sm border-0 mb-4 text-center">
             <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
                 {% if chart_data %}
@@ -83,11 +90,14 @@
             </div>
         </div>
 
-        <div class="card shadow-sm border-0 bg-dark text-white rounded-3">
+        <!-- БЛОК 1: КЛАССИЧЕСКИЕ БЛИЖАЙШИЕ СПИСАНИЯ (ТЕМНЫЙ, С КЛАССИЧЕСКИМ СЕЛЕКТОРОМ) -->
+        <div class="card shadow-sm border-0 bg-dark text-white rounded-3 mb-4">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0 fw-bold">⏱️ Ближайшие списания</h5>
+                    <!-- Скрыто передаем forecast_days, чтобы при клике на Блок 1 не сбрасывался Блок 2 -->
                     <form method="get" action="" class="d-inline">
+                        <input type="hidden" name="forecast_days" value="{{ forecast_days }}">
                         <select name="days" class="form-select form-select-sm bg-secondary text-white border-0 fw-bold" onchange="this.form.submit()">
                             <option value="3" {% if days_limit == 3 %}selected{% endif %}>3 дня</option>
                             <option value="5" {% if days_limit == 5 %}selected{% endif %}>5 дней</option>
@@ -99,24 +109,57 @@
                     </form>
                 </div>
                 
-                <p class="mb-2 text-light-50 small">За выбранный период понадобится для оплаты:</p>
+                <p class="mb-2 text-white-50 small">За выбранный период понадобится для оплаты:</p>
                 <h3 class="text-warning fw-bold mb-3">{{ upcoming_total }} ₽</h3>
                 
                 {% if upcoming_by_categories %}
-                    <h6 class="fs-7 text-uppercase fw-bold text-secondary mb-2" style="font-size: 0.75rem;">Разбивка по сферам:</h6>
-                    <ul class="list-unstyled mb-0">
-                        {% for cat, sum in upcoming_by_categories.items %}
+                    <ul class="list-unstyled mb-0" style="font-size: 0.9rem;">
+                        {% for cat, data in upcoming_by_categories.items %}
                             <li class="d-flex justify-content-between border-bottom border-secondary py-1 text-light">
-                                <span>📁 {{ cat }}</span>
-                                <span class="fw-bold text-info">{{ sum }} ₽</span>
+                                <span>📁 {{ cat }} <span class="text-white-50 small">({{ data.services|join:", " }})</span></span>
+                                <span class="fw-bold text-info">{{ data.total }} ₽</span>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted small mb-0">В этот период списаний не планируется.</p>
+                    <p class="text-white-50 small mb-0">В этот период списаний не планируется.</p>
                 {% endif %}
             </div>
         </div>
+
+                <!-- БЛОК 2: НОВЫЙ НЕЗАВИСИМЫЙ БЛОК ПРОГНОЗА (ТОЖЕ ЧЕРНЫЙ С БЕЛЫМ ТЕКСТОМ) -->
+        <div class="card shadow-sm border-0 bg-dark text-white rounded-3">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-bold"><p class="mb-2 text-light-50 small">Фактические затраты на <strong class="text-white">{{ forecast_days }} дн.</strong> вперед:</p></h5>
+                    <!-- Форма кастомного ввода. Скрыто передает "days", чтобы не сбивать Блок 1 -->
+                    <form method="get" action="" class="d-flex align-items-center mt-2 mt-sm-0">
+                        <input type="hidden" name="days" value="{{ days_limit }}">
+                        <div class="input-group input-group-sm" style="max-width: 150px;">
+                            <input type="number" name="forecast_days" class="form-control bg-secondary text-white border-0 fw-bold text-center" 
+                                   placeholder="Свой" value="{{ forecast_days }}" min="1" max="10000" style="width: 70px;">
+                            <span class="input-group-text bg-secondary text-white border-0 small fw-bold px-2">дн.</span>
+                            <button type="submit" class="btn btn-primary fw-bold px-2">ОК</button>
+                        </div>
+                    </form>
+                </div>
+                <h3 class="text-warning fw-bold mb-3">{{ forecast_total }} ₽</h3>
+                
+                {% if forecast_by_categories %}
+                    <ul class="list-unstyled mb-0" style="font-size: 0.9rem;">
+                        {% for cat, data in forecast_by_categories.items %}
+                            <li class="d-flex justify-content-between border-bottom border-secondary py-1 text-light">
+                                <span>📁 {{ cat }} <span class="text-white-50 small">({{ data.services|join:", " }})</span></span>
+                                <span class="fw-bold text-info">{{ data.total }} ₽</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-white-50 small mb-0">За указанный период расходов нет.</p>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

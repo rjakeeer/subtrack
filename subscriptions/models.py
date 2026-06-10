@@ -34,6 +34,7 @@ class UserSubscription(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions', verbose_name="Пользователь")
     service = models.ForeignKey(SubscriptionService, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Сервис из каталога")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='custom_subscriptions', verbose_name="Категория (для кастомной)")
     custom_name = models.CharField(max_length=100, null=True, blank=True, verbose_name="Кастомное название")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Стоимость подписки")
     billing_period = models.CharField(max_length=10, choices=BILLING_CHOICES, default='monthly', verbose_name="Периодичность списания")

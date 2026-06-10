@@ -1,15 +1,33 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход в систему</title>
-</head>
-<body>
-    <h2>Войти в SubTrack</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
-    </form>
-    <p>Еще не зарегистрированы? <a href="{% url 'register' %}">Регистрация</a></p>
-</body>
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Вход в систему — SubTrack{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-header bg-dark text-white fw-bold py-3 text-center">
+                🔐 Войти в SubTrack
+            </div>
+            <div class="card-body p-4">
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    
+                    <!-- Автоматические стили Bootstrap для полей формы -->
+                    {% bootstrap_form form %}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">Войти</button>
+                    </div>
+                </form>
+                <hr class="my-3">
+                <div class="text-center">
+                    <span class="text-muted">Еще не зарегистрированы?</span> 
+                    <a href="{% url 'register' %}" class="fw-bold text-decoration-none">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

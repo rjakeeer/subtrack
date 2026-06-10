@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Добро пожаловать в SubTrack{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-center py-5">
+    <div class="col-lg-8 text-center">
+        <!-- Название проекта крупно и синим цветом -->
+        <h1 class="display-2 fw-bold text-primary mb-2" style="text-transform: lowercase;">subtrack</h1>
+        
+        <!-- Официальная тема проекта строкой ниже -->
+        <p class="lead text-muted mb-4 fs-4 fw-normal">Сервис учета цифровых подписок для пользователей с целью анализа ежемесячных расходов и оптимизации затрат</p>
+        
+        <!-- Кнопки управления (Авторизация) -->
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-4">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm">Регистрация</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg px-5">Войти</a>
+        </div>
+
+        <!-- ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ И КНОПКА-ССЫЛКА НА ГИТХАБ -->
+        <div class="row justify-content-center mt-4 mb-2">
+            <div class="col-md-10">
+                <div class="p-3 bg-white border border-light-subtle rounded-3 shadow-sm d-flex flex-wrap justify-content-around align-items-center text-secondary" style="font-size: 0.95rem;">
+                    
+                    <!-- Стек проекта -->
+                    <div>
+                        💻 <strong>Стек технологий:</strong> Python 3 / Django 5 / Matplotlib
+                    </div>
+                    
+                    <!-- Разделитель -->
+                    <div class="d-none d-md-block text-light">|</div>
+                    
+                    <!-- Превратили репозиторий в красивую кнопку-ссылку Bootstrap -->
+                    <div>
+                        <a href="https://github.com/rjakeeer/subtrack" target="_blank" class="btn btn-outline-primary btn-sm fw-bold px-3 shadow-sm">
+                            🐙 Перейти в GitHub репозиторий
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ДВУХКОЛОНОЧНЫЙ БЛОК ДОКУМЕНТАЦИИ (TZ СЛЕВА, README СПРАВА) -->
+<div class="row border-top pt-5 mb-5">
+    
+    <!-- ТЗ СЛЕВА -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 bg-white h-100 rounded-3">
+            <div class="card-header bg-light text-center fw-bold py-3 text-uppercase tracking-wider text-secondary" style="font-size: 0.85rem;">
+                📄 Техническое задание проекта (TZ.md)
+            </div>
+            <div class="card-body p-3 bg-light-subtle">
+                {% if tz_content %}
+                    <pre class="mb-0 text-start text-dark p-3 bg-white rounded border border-light-subtle" style="white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.4; max-height: 500px; overflow-y: auto;">{{ tz_content }}</pre>
+                {% else %}
+                    <p class="text-muted text-center py-4 mb-0">Файл TZ.md не найден в корне проекта.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- README СПРАВА -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 bg-white h-100 rounded-3">
+            <div class="card-header bg-light text-center fw-bold py-3 text-uppercase tracking-wider text-secondary" style="font-size: 0.85rem;">
+                📘 Описание проекта (README.md)
+            </div>
+            <div class="card-body p-3 bg-light-subtle">
+                {% if readme_content %}
+                    <pre class="mb-0 text-start text-dark p-3 bg-white rounded border border-light-subtle" style="white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.4; max-height: 500px; overflow-y: auto;">{{ readme_content }}</pre>
+                {% else %}
+                    <p class="text-muted text-center py-4 mb-0">Файл README.md пуст или еще не создан в корне проекта.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
