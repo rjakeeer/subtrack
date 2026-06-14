@@ -1,5 +1,5 @@
 # Используем официальный легкий образ Python
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Устанавливаем переменные окружения
 ENV PYTHONDONTWRITEBYTECODE=1
