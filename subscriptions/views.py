@@ -17,6 +17,7 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from datetime import datetime, timedelta  # Для точной работы с датами
 from django.db.models.functions import Lower
+from django.db.models import Sum
 
 
 
@@ -73,15 +74,19 @@ def dashboard(request):
     user_subs = UserSubscription.objects.filter(user=request.user, is_active=True)
     
     # Расчет общих сумм трат
-    total_monthly = 0
-    total_yearly_forecast = 0
-    for sub in user_subs:
-        if sub.billing_period == 'monthly':
-            total_monthly += sub.price
-            total_yearly_forecast += sub.price * 12
-        elif sub.billing_period == 'yearly':
-            total_monthly += sub.price / 12
-            total_yearly_forecast += sub.price
+    # База данных сама фильтрует подписки и мгновенно суммирует их стоимость
+    monthly_sum = UserSubscription.objects.filter(
+        user=request.user, is_active=True, billing_period='monthly'
+    ).aggregate(total=Sum('price'))['total'] or 0
+
+    yearly_sum = UserSubscription.objects.filter(
+        user=request.user, is_active=True, billing_period='yearly'
+    ).aggregate(total=Sum('price'))['total'] or 0
+
+    # Финальный расчет средних затрат для передачи в шаблон (контекст не меняется!)
+    total_monthly = float(monthly_sum) + (float(yearly_sum) / 12)
+    total_yearly_forecast = (float(monthly_sum) * 12) + float(yearly_sum)
+
 
         # === ЛОГИКА ОПТИМИЗАЦИИ РАСХОДОВ (АЛЕРТЫ) ===
     optimization_alerts = []
