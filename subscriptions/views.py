@@ -270,26 +270,23 @@ def service_catalog(request):
     search_query = request.GET.get('search', '').strip()
     category_id = request.GET.get('category', '')
 
-    # 1. Сначала фильтруем по категории на уровне базы данных (если она выбрана)
+    # Начинаем строить ленивый и эффективный запрос к базе данных
     services = SubscriptionService.objects.all().select_related('category')
+
+    # 1. Фильтруем по категории на уровне СУБД (если она выбрана)
     if category_id:
         services = services.filter(category_id=category_id)
 
-    # 2. Переводим QuerySet в список, чтобы применить чистый Python для поиска по русскому тексту
-    services_list = list(services)
-
+    # 2. ИСПОЛЬЗУЕМ Q-ОБЪЕКТЫ: база данных сама выполнит поиск по тексту
     if search_query:
-        search_query_lower = search_query.lower()
-        # Фильтруем список: оставляем только те сервисы, где поисковый запрос есть внутри названия
-        services_list = [
-            service for service in services_list 
-            if search_query_lower in service.name.lower()
-        ]
+        services = services.filter(
+            Q(name__icontains=search_query)
+        )
 
     categories = Category.objects.all()
 
     context = {
-        'services': services_list,  # Передаем отфильтрованный список в шаблон
+        'services': services,  # Теперь передаем чистый QuerySet вместо списка list()
         'categories': categories,
         'search_query': search_query,
         'selected_category': category_id,
