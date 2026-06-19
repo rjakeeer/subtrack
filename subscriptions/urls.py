@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from subscriptions.api_views import UserSubscriptionsAPIView
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
@@ -10,4 +11,5 @@ urlpatterns = [
     path('edit/<int:sub_id>/', views.edit_subscription, name='edit_subscription'),
     path('delete/<int:sub_id>/', views.delete_subscription, name='delete_subscription'),
     path('dismiss-alert/<str:alert_id>/', views.dismiss_alert, name='dismiss_alert'),
+    path('api/v1/my-subscriptions/', UserSubscriptionsAPIView.as_view(), name='api_my_subscriptions'),
 ]
