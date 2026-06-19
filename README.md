@@ -58,3 +58,4 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 После запуска проект будет доступен в браузере по адресу: 127.0.0.1:8000 (8000 дефолтный порт, если хотите поменять python manage.py runserver 1234)
+Скриншоты работы продукта доступны по ссылке: https://drive.google.com/drive/folders/1zzE08Msr92xehjukL_jlRXfQCYEL4AJ2?usp=sharing
